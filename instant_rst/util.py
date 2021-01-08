@@ -26,7 +26,7 @@ def delay(t, func, args):
     time.sleep(t)
     # call function in globals with unzipped args[]
     globals()[func](*args)
-    
+
 
 def browse(browser, url):
     if sys.platform.startswith('darwin'):
@@ -60,7 +60,7 @@ def browseAndPost(browser, url):
 
 
 def getDir(_dir):
-    return _dir if os.path.isabs(_dir) else os.path.join(os.getcwd(), os.path.dirname(_dir)) 
+    return _dir if os.path.isabs(_dir) else os.path.join(os.getcwd(), os.path.dirname(_dir))
 
 from urllib import request, parse
 
@@ -73,24 +73,36 @@ def post(url, data):
 
 
 def emit_doc(sock, _dir='', _file='', _pos='-1'):
+    print("emit_doc")
 
     _dir = str(_dir)
+    print("dir: %s" % _dir)
     _file = str(_file)
+    print("file: %s" % _file)
     _pos = str(_pos)
+    print("pos: %s" % _pos)
 
-    if _dir:
-        settings.STATIC_DIR = getDir(_dir)
+    try:
+        if _dir:
+            settings.STATIC_DIR = getDir(_dir)
 
-    if os.path.isfile(_file):
-        settings.DEFAULT_FILE = _file
+        if os.path.isfile(_file):
+            print("file exist")
+            settings.DEFAULT_FILE = _file
 
-        with open(_file,'r') as _fo:
-            _doc = html_body(_fo.read())
-            sock.emit('updatingContent', {'HTML': _doc, 'pos':_pos})
+            with open(_file,'r') as _fo:
+                _doc = html_body(_fo.read())
+                print("converted")
+                sock.emit('updatingContent', {'HTML': _doc, 'pos':_pos})
+                return True
+        else:
+            print("not exist: %s" % _file)
+
+        # elif _pos != '-1':
+        if _pos != '-1':
+            sock.emit('updatingContent', {'pos':_pos})
             return True
-
-    elif _pos != '-1':
-        sock.emit('updatingContent', {'pos':_pos})
-        return True
+    except Exception as e:
+        print(str(e))
 
     return False

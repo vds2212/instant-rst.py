@@ -10,13 +10,14 @@ app = Flask(__name__,
             static_folder=settings.FLASK_STATIC_FOLDER,
             template_folder=settings.FLASK_TEMPLATE_FOLDER)
 app.config['SECRET_KEY'] = settings.SECRET
-sock = SocketIO(app)
+sock = SocketIO(app, cors_allowed_origins="*")
 
 # ROUTE
 
 @app.route('/', methods=['GET'])
 def index_get():
     _file = request.args.get('rst', '')
+    print("file:", _file)
     if os.path.isfile(_file):
         with open(_file,'r') as _fo:
             _doc = html_body(_fo.read())
