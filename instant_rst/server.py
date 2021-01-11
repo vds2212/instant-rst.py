@@ -29,7 +29,7 @@ def index_get():
     _file = request.args.get("rst", "")
     print("file:", _file)
     if os.path.isfile(_file):
-        with open(_file, mode="rt") as _fo:
+        with open(_file, mode="rt", encoding="utf8") as _fo:
             _doc = html_body(_fo.read())
             return render_template("index.html", HTML=_doc)
     else:
